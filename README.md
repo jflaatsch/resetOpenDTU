@@ -8,6 +8,7 @@ Dependencies:
 Required:
 -------------------
 python3      - commonly used coding language
+virtualenv   - used to make a custom python environment for this project
 selenium     - website manipulation library for python
 crontab      - task scheduling tool to auto initiate the script
 chromium     - web browser (alternatives: firefox, chrome)
@@ -16,6 +17,8 @@ chromedriver - web driver for selenium (alternative: geckodriver)
 Optional:
 -------------------
 keyring          - system keyring interface library for python
+xephyr           - virtual display interface
+xvfb             - virtual frame buffer for xwindows
 pyvirtualdisplay - display driver library for python
 
 Files in this repository (see Setup section below for quickstart steps):
@@ -63,15 +66,16 @@ Setup:
 install the dependencies on your system, for debian:
 <code>
 apt update
-apt install python3 pip crontab chromium cromedriver 
+apt install python3 python3-venv pip crontab chromium cromedriver 
 </code>
 - see discussion for browser and driver alternatives
 <code>
-mkdir resetOpenDTU
-cd resetOpenDTU
-python -m venv .venv 
+mkdir ~/resetOpenDTU
+pip install virtualenv 
+virtualenv ~/resetOpenDTU/.venv
+cd ~/resetOpenDTU
 source ./.venv/bin/activate 
-pip install selenium pyvirtualdisplay keyring
+pip install selenium keyring pyvirtualdisplay
 deactivate
 </code>
 (reference: https://docs.python.org/3/library/venv.html)
@@ -209,4 +213,131 @@ Selenium browser and webdriver options - several available
 
 Troubleshooting:
 ===================
-- TODO: add troubleshooting errors and fixes
+Installation issues:
+-------------------
+- -bash: virtualenv: command not found
+  - there are multiple ways to setup the virtual environment, you can use a method that is already installed or install virtualenv
+  <code>pip install virtualenv</code>
+
+- The virtual environment was not created successfully because ensurepip is not available.  On Debian/Ubuntu systems, you need to install the python3-venv package using the following command.
+  - there are multiple ways to setup the virtual environment, you must have tried the python -m venv method, but python3-venv is not installed
+  <code>apt install python3-venv</code>
+
+- raise child_exception_type(errno_num, err_msg, err_filename) FileNotFoundError: [Errno 2] No such file or directory: 'Xephyr'
+  - apt install xserver-xephyr
+  - will need 163MB for installation
+  - if you intend to use the script without display, remove the requirement for Xephyr from main.py
+  - comment out reference to pyvirtualdisplay and to Display
+
+- FileNotFoundError: [Errno 2] No such file or directory: 'Xvfb'
+  - install xvfb: apt install xvfb
+
+Display configuration issues:
+-------------------
+- pyvirtualdisplay.abstractdisplay.XStartError: Xephyr program closed. command: ['Xephyr', '-br', '-screen', '960x540x24', '-displayfd', '4', '-resizeable'] stderr: b'\nXephyr cannot open host display. Is DISPLAY set?\n'
+  - if you intend to use the script without display, remove the requirement for Xephyr from main.py
+  - comment out reference to pyvirtualdisplay and to Display
+  - fixing this can be involved, if required for testing, install the optional dependencies to watch selenium interact with the browser
+  - if this error occurs while executing run_resetOpenDTU.sh, execute main.py directly from python with the virtual environment activated: source ./.venv/bin/activate && python main.py
+  - if that works correctly, check the settings in run_resetOpenDTU.sh, uncomment the line: export DISPLAY=":0"
+  - reference external sources for which value to set for DISPLAY
+
+Selenium configuration issues:
+-------------------
+- selenium.common.exceptions.WebDriverException: Message: Unsupported platform/architecture combination: linux/aarch64
+  - this error occurs when selenium doesn't receive a path to a binary file for the browser or webdriver
+  - specify the location of the binary executables of the browser and webdriver
+  - locate the required binary files for your desired configuration:
+    - whereis chromium;
+    - whereis chromedriver;
+    - whereis firefox;
+    - whereis geckodriver
+  - add the path to the corresponding lines in main.py
+  <code>
+  CHROMEDRIVER_PATH = r'/usr/bin/chromedriver'
+  FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'
+  GECKODRIVER_PATH = r'/usr/bin/geckodriver'
+  </code>
+  - modify the path contants to match the paths returned by whereis
+
+- selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
+  - ensure that main.py is configured to use the selenium webdriver which is installed on your system: options; server; webdriver; & paths to binary files
+  - firefox/firefox-esr use the geckodriver
+  - chrome/chromium use the chromedriver
+  - install the required browser and driver:
+    - apt install firefox
+    - firefox should include geckodriver, reference: https://www.baeldung.com/linux/geckodriver-installation
+    - apt install chromium-browser chromium-chromedriver
+  - 
+  - search for external documentation if you intend to use another browser/webdriver combination
+
+- selenium.common.exceptions.SessionNotCreatedException: Message: Unable to find a matching set of capabilities
+  - ensure that main.py is configured to use the selenium webdriver which is installed on your system: options; server; webdriver; & paths to binary files
+  - firefox/firefox-esr use the geckodriver
+  - chrome/chromium use the chromedriver
+
+- selenium.common.exceptions.InvalidArgumentException: Message: binary is not a Firefox executable
+- Message: binary is not a Firefox executable - firefox is either not installed, or the path to the executable is incorrect
+  - install firefox: apt install firefox
+  - update path to executable: whereis firefox
+  - you might have firefox-esr install, you can also use that
+  - optionally install firefox-esr ~400MB required for installation with dependencies: apt install firefox-esr
+  - update path to executable: whereis firefox-esr
+  - see selenium.common.exceptions.WebDriverException above
+
+- selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
+  - install chrome: apt install chrome-browser
+  - note that chrome is resource intensive, if it is not already installed, you may want to use chromium instead
+  - update path to executable: whereis google-chrome; whereis chromebrowser
+  - see selenium.common.exceptions.WebDriverException above
+
+Execution errors:
+-------------------
+- selenium.common.exceptions.WebDriverException: Message: Failed to decode response from marionette
+  - selenium was not able to read the server response or no response from the server
+  - this could be caused by the browser not being able to access OpenDTU through the network
+  - open a regular browser and attemp to connect to OpenDTU
+  - if no GUI installed attempt to reach OpenDTU by other means: ping; wget; curl
+  - use gunzip or similar to decode the binary response
+  - the text in the response will likely state that JavaScript is required
+  - if it persists, search for external references to assist with resolving the error
+  - please submit the your solution as a bug report to be added to the documentation
+  - 
+- keyring.errors.NoKeyringError: No recommended backend was available. Install a recommended 3rd party backend package; or, install the keyrings.alt package if you want to use the non-recommended backends. See https://pypi.org/project/keyring for details.
+  - this is likely on Raspberry Pi, no system keyring recognized by python's keyring library
+  - attempt to install an alternative system keyring that will work with python's keyring
+  - alternatively, use environment variables to store the OpenDTU password on the local system
+  - additionally reference: https://pypi.org/project/keyring/ and https://www.geeksforgeeks.org/storing-passwords-with-python-keyring/
+  - reference: https://stackoverflow.com/questions/7014953/i-need-to-securely-store-a-username-and-password-in-python-what-are-my-options
+  - some options require dbus, if you get those to work on Raspberry Pi, please contribution to the documentation through a bugreport or pull request
+  - deb-keyring was unsuccessful
+  - gnome-keyring was unsuccessful
+ 
+- keyring.errors.KeyringLocked: Failed to unlock the collection!
+  - keyring configuration on Raspberry Pi still incompatable, consider using environment variables instead
+  - if you get a keyring implementation to work on Raspberry Pi, please contribute to the documentation through a bugreport or pull request
+
+- Command.SEND_KEYS_TO_ELEMENT, {"text": "".join(keys_to_typing(value)), "value": keys_to_typing(value)}, line 137, in keys_to_typing characters.extend(val), TypeError: 'NoneType' object is not iterable
+  - the login username or password is not getting into python correctly
+  - check that the environment variables are set in ~/.profile as described in Setup.
+  - if the script executes correctly directly from python, but this occurs when using the bash script run_resetOpenDTU.sh, check that the environment variables are being loaded correctly in the following line:
+  <code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /var/log/resetOpenDTU.log 2>&1</code>
+  - keep the dot/period before the $HOME directly.  the dot tells bash to execute/load the ~/.profile with the environment variables
+  - replace $HOME with your actual home path and replace PATH with the actual path to resetOpenDTU
+
+- do_click = input('yes, to reboot, NO otherwise: '), EOFError: EOF when reading a line
+  - this probably occured while executing the bash script, run_resetOpenDTU.sh.  it is not possible to interact with the python script through the bash script in this way.  you will not be able to complete the reboot confirmation step as configured during testing.
+  - comment out the following lines during bash script testing:
+  <code>
+                # following will cause an error in crontab implementation
+                #do_click = input('yes, to reboot, NO otherwise: ')
+                #if do_click.lower() == 'yes':
+                #   wait_and_click(wait, driver, 'xpath', element)
+                #   print('Wait for OpenDTU restart...')
+  </code>
+
+Another hint:
+-------------------
+- if multiple versions of python are installed on the system, pay attention to which version is running in the virtual environment
+
+
