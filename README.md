@@ -7,19 +7,19 @@ Dependencies:
 ===================
 Required:
 -------------------
-python3      - commonly used coding language
-virtualenv   - used to make a custom python environment for this project
-selenium     - website manipulation library for python
-crontab      - task scheduling tool to auto initiate the script
-chromium     - web browser (alternatives: firefox, chrome)
-chromedriver - web driver for selenium (alternative: geckodriver)
+- python3      - commonly used coding language (reference: https://www.python.org/)
+- virtualenv   - used to make a custom python environment for this project (reference: https://docs.python.org/3/library/venv.html)
+- selenium     - website manipulation library for python (reference: https://www.selenium.dev/)
+- crontab      - task scheduling tool to auto initiate the script (reference: https://en.wikipedia.org/wiki/Cron)
+- chromium     - minimal web browser (alternatives: firefox, chrome, safari, edge, ie) (reference: https://www.chromium.org/Home/)
+- chromedriver - web driver for selenium (alternative: geckodriver, or corresponding driver for other browsers) 
 
 Optional:
 -------------------
-keyring          - system keyring interface library for python
-xephyr           - virtual display interface
-xvfb             - virtual frame buffer for xwindows
-pyvirtualdisplay - display driver library for python
+- keyring          - system keyring interface library for python (reference: https://pypi.org/project/keyring/)
+- xephyr           - virtual display interface
+- xvfb             - virtual frame buffer for xwindows
+- pyvirtualdisplay - display driver library for python (reference: https://pypi.org/project/PyVirtualDisplay/)
 
 Files in this repository (see Setup section below for quickstart steps):
 ===================
@@ -33,7 +33,7 @@ this file can be used to add the OpenDTU password to the system keyring. change 
 
 run_resetOpenDTU.sh - bash wrapper script to call from crontab
 -------------------
-this file handles opening the virtual environment for python and starting the script.  it also adds timestamps for the log file and can  open a display for the browser on a GUI (window) operating system.
+this file handles opening the virtual environment for python and starting the script.  it also adds timestamps for the log file and can open a display for the browser on a GUI (window) operating system.
 
 System configuration files (see Setup section below for quickstart steps):
 ===================
