@@ -3,6 +3,7 @@
 TIMESTAMP=$(TZ=GMT date +"start: %F; %T, %Z")
 echo $TIMESTAMP
 
+# export DISPLAY=":0"
 PYTHON_FOLDER="~/resetOpenDTU"
 
 source ${PYTHON_FOLDER}/.venv/bin/activate
