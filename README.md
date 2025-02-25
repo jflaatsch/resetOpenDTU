@@ -1,6 +1,6 @@
 # resetOpenDTU - web automation script to reset OpenDTU through the web interface using selenium
 
-This is a python script to use selenium webbrowser automation software to remotely reset an OpenDTU.
+This is a python script to use selenium web browser automation software to remotely reset an OpenDTU.
 This initial version is intended to run on a headless Raspberry Pi.  It compromises some security to make that possible.  Some system knowledge is required to implement this solution as it is.  There is tons of room for improvement for those inclined to help the community.
 
 Dependencies:
@@ -22,11 +22,11 @@ Optional:
 - xvfb             - virtual framebuffer X server for X Version 11 (reference: https://www.x.org/archive/X11R7.7/doc/man/man1/Xvfb.1.xhtml)
 - pyvirtualdisplay - display driver library for python (reference: https://pypi.org/project/PyVirtualDisplay/)
 
-Files in this repository (see Setup section below for detailed steps):
+Files in this repository (see Setup section below for quick-start steps):
 ===================
-main.py - main code to automate resetting OpenDTU
+main.py - main code to automate rebooting OpenDTU
 -------------------
-this is the main script.  it is currently set to use chromium without a display and impliments user environment variables to store the OpenDTU password.  options for alternative setups are commented out.  specify the binary file locations for the browser, webdriver, and OpenDTU IP address. 32-bit Raspberry Pi might not support some dependencies
+this is the main script.  it is currently set to use chromium without a display and implements user environment variables to store the OpenDTU password.  options for alternative setups are commented out.  specify the binary file locations for the browser, webdriver, and OpenDTU IP address. 32-bit Raspberry Pi might not support some dependencies
 
 setkey.py - helper file to add the OpenDTU admin password key to your local keyring
 -------------------
@@ -36,7 +36,7 @@ run_resetOpenDTU.sh - bash wrapper script to call from crontab
 -------------------
 this file handles opening the virtual environment for python and starting the script.  it also adds timestamps for the log file and can open a display for the browser on a GUI (window) operating system.
 
-System configuration files (see Setup section below for quickstart steps):
+System configuration files (see Setup section below for quick-start steps):
 ===================
 crontab - task scheduling tool to run the script at set times, command line examples 
 -------------------
@@ -66,9 +66,8 @@ Setup:
 ===================
 Install the dependencies on your system, for debian:
 -------------------
-<code>
-apt update
-apt install python3 pip crontab chromium cromedriver 
+<code>apt update
+apt install python3 pip crontab chromium chromedriver 
 </code>
 - see discussion for browser and driver alternatives
 <code>
@@ -84,7 +83,7 @@ deactivate
 
 Configure crontab:
 -------------------
-- add the appropriate crontab command line for your implimentation and edit as desired
+- add the appropriate crontab command line for your implementation and edit as desired
 - for initial testing, you can send the output to the terminal
 <code>tty</code>
 - note the output from the tty command, this is the device assigned to your terminal
@@ -99,7 +98,7 @@ Configure crontab:
 - replace $HOME with the actual path to your .profile for environment variables. 
 - replace PATH with the actual path to your resetOpenDTU folder location
 - keep the dot before $HOME, that is a command, keep the 2>&1 at the end, that directs output from the code to the terminal or log file.
-- for testint purposes, return here set a time in the near future from your system clock,
+- for testing purposes, return here set a time in the near future from your system clock,
 - To define the time you can provide concrete values for minute (m), hour (h), day of month (dom), month (mon), and day of week (dow) or use '*' in these fields (for 'any').
 - use comma separated values for multiple times, or */5 to repeat every 5 minutes for example, should be a factor of 60
 - save and exit the file, if using nano: ctrl+s (save); ctrl+x (exit)
@@ -121,12 +120,12 @@ export OPENDTU_PASS=secretpassword
 --- OR use keyring ---
 
 Keyring:
-- this is an optional way to store your OpenDTU password for automation.  using the setkey.py helper script is not required, the keyring implementation just needs to be consistent with - the keyring retrieval used in main.py.  it might be slightly more secure to use a python commandline instead of saving a password temporarily in a file.
+- this is an optional way to store your OpenDTU password for automation.  using the setkey.py helper script is not required, the keyring implementation just needs to be consistent with - the keyring retrieval used in main.py.  it might be slightly more secure to use a python command line instead of saving a password temporarily in a file.
 
 <code>nano setkey.py</code>
 - set your admin/user password for OpenDTU by replacing the placeholder word "change" in the following line of the setkey.py file
 <code>PASSWORD = 'change' #TODO: update this to the actual password when needed</code>
-- after updating the password you can save it under a new name so that you can delete or shred it later without affecting setkey.py, in nano: ctrl+x. it will prompt you to save changes, press y.  it will ask for a name for the file, change it to something that will not attrack attention: temp.py
+- after updating the password you can save it under a new name so that you can delete or shred it later without affecting setkey.py, in nano: ctrl+x. it will prompt you to save changes, press y.  it will ask for a name for the file, change it to something that will not attract attention: temp.py
 
 - execute the helper script with python
 <code>python temp.py</code>
@@ -165,7 +164,7 @@ Testing in one big gulp:
 
 Testing with little bites:
 ===================
-- configuring display settings will be in a separate section for Display web browser
+- configuring a display for the web browser will be in the Optional configuration section
 
 Configure and test main.py
 -------------------
@@ -182,9 +181,9 @@ DEBUG = False #NOTE: DEBUG = True disables reboot confirmation step for testing
 DEBUG_BASH = False #NOTE: DEBUG_BASH = True disables the text prompt to complete the reboot step during testing with run_resetOpenDTU.sh or crontab
 WATCH_BROWSER = False #NOTE: WATCH_BROWSER = True enables a virtual display for testing
 </code>
-- note, DEBUG = True will not complete the reset process, OpenDTU will not restart so that it does not interupt OpenDTU's normal operation during the day
+- note, DEBUG = True will not complete the reset process, OpenDTU will not restart so that it does not interrupt OpenDTU's normal operation during the day
 - if desired, set WATCH_BROWSER = True, this should allow you to see the OpenDTU website while the python script main.py executes
-- to run a full test confirming reboot in debug mode, set DTBUG_BASH
+- to run a full test confirming reboot in debug mode, set DEBUG_BASH
 - this will provide a user prompt, type yes to actually reboot OpenDTU
 
 Run tests to confirm that main.py executes correctly:
@@ -328,7 +327,7 @@ Use Firefox:
 
 Use another browser:
 -------------------
-- using another browser would follow a process similar to using Firefox, but will require additional code for implimentation
+- using another browser would follow a process similar to using Firefox, but will require additional code for implementation
 - below is the relevant code, just add the corresponding options for your desired browser
 - import the appropriate service as browser-service
   <code>
@@ -341,7 +340,7 @@ Use another browser:
   USE_FIREFOX  = 'firefox'
   USE_CHROMIUM = 'chromium'
   USE_BROWSER  = USE_CHROMIUM #NOTE: alternatively set USE_FIREFOX to use firefox
-                              #NOTE: other browsers can be used, but require additional code for implimentation
+                              #NOTE: other browsers can be used, but require additional code for implementation
   CHROMEDRIVER_PATH   = r'/usr/bin/chromedriver'
   FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'
   GECKODRIVER_PATH    = r'/usr/bin/geckodriver'
@@ -353,7 +352,7 @@ Use another browser:
     if USE_BROWSER == USE_FIREFOX:
         if DEBUG: print('loading Firefox options...')
         options = webdriver.FirefoxOptions()
-        options.binary_location = CHROMEDRIVER_PATH
+        options.binary_location = FIREFOX_BINARY_PATH
         options.add_argument('--headless')
         service = firefox-service(GECKODRIVER_PATH)
         driver = webdriver.Firefox(options=options, service=service) #requires >
@@ -381,13 +380,13 @@ Show the browser window in an xwindow display:
 
 Discussion:
 ===================
-this script requires some understanding of python, selenium, and crontab to impliment fully.  there are several options and the script can be modified to meet your requirements by changing a few constants in main.py.
+this script requires some understanding of python, selenium, and crontab to implement fully.  there are several options and the script can be modified to meet your requirements by changing a few constants in main.py.
 
 Password storage options - keyring or environment variables, other methods are also possible but will require more modification to main.py
 -------------------
 - during automation testing, OpenDTU responded with a login screen. you will need to store the password for an OpenDTU user for the automated script to get past the login.
-- the script was developed for keyring, then finally implimented with environment variables on Raspberry Pi
-- keyring may be more secure, but it is problematic on a Raspeberry Pi (reference: https://pypi.org/project/keyring/ and https://www.geeksforgeeks.org/storing-passwords-with-python-keyring/)
+- the script was developed for keyring, then finally implemented with environment variables on Raspberry Pi
+- keyring may be more secure, but it is problematic on a Raspberry Pi (reference: https://pypi.org/project/keyring/ and https://www.geeksforgeeks.org/storing-passwords-with-python-keyring/)
 - choose one of the other or find another solution so that you don't have to store the password as plain text
 - for a good discussion of other options, reference: https://stackoverflow.com/questions/7014953/i-need-to-securely-store-a-username-and-password-in-python-what-are-my-options
 
@@ -448,7 +447,7 @@ Selenium configuration issues:
   FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'
   GECKODRIVER_PATH = r'/usr/bin/geckodriver'
   </code>
-  - modify the path contants to match the paths returned by whereis
+  - modify the path constants to match the paths returned by whereis
 
 - selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
   - ensure that main.py is configured to use the selenium webdriver which is installed on your system: options; server; webdriver; & paths to binary files
@@ -486,7 +485,7 @@ Execution errors:
 - selenium.common.exceptions.WebDriverException: Message: Failed to decode response from marionette
   - selenium was not able to read the server response or no response from the server
   - this could be caused by the browser not being able to access OpenDTU through the network
-  - open a regular browser and attemp to connect to OpenDTU
+  - open a regular browser and attempt to connect to OpenDTU
   - if no GUI installed attempt to reach OpenDTU by other means: ping; wget; curl
   - use gunzip or similar to decode the binary response
   - the text in the response will likely state that JavaScript is required
@@ -499,13 +498,13 @@ Execution errors:
   - alternatively, use environment variables to store the OpenDTU password on the local system
   - additionally reference: https://pypi.org/project/keyring/ and https://www.geeksforgeeks.org/storing-passwords-with-python-keyring/
   - reference: https://stackoverflow.com/questions/7014953/i-need-to-securely-store-a-username-and-password-in-python-what-are-my-options
-  - some options require dbus, if you get those to work on Raspberry Pi, please contribution to the documentation through a bugreport or pull request
+  - some options require dbus, if you get those to work on Raspberry Pi, please contribution to the documentation through a feature or pull request
   - deb-keyring was unsuccessful
   - gnome-keyring was unsuccessful
  
 - keyring.errors.KeyringLocked: Failed to unlock the collection!
-  - keyring configuration on Raspberry Pi still incompatable, consider using environment variables instead
-  - if you get a keyring implementation to work on Raspberry Pi, please contribute to the documentation through a bugreport or pull request
+  - keyring configuration on Raspberry Pi still incompatible, consider using environment variables instead
+  - if you get a keyring implementation to work on Raspberry Pi, please contribute to the documentation through a feature or pull request
 
 - Command.SEND_KEYS_TO_ELEMENT, {"text": "".join(keys_to_typing(value)), "value": keys_to_typing(value)}, line 137, in keys_to_typing characters.extend(val), TypeError: 'NoneType' object is not iterable
   - the login username or password is not getting into python correctly
@@ -516,18 +515,10 @@ Execution errors:
   - replace $HOME with your actual home path and replace PATH with the actual path to resetOpenDTU
 
 - do_click = input('yes, to reboot, NO otherwise: '), EOFError: EOF when reading a line
-  - this probably occured while executing the bash script, run_resetOpenDTU.sh.  it is not possible to interact with the python script through the bash script in this way.  you will not be able to complete the reboot confirmation step as configured during testing.
-  - comment out the following lines during bash script testing:
-  <code>
-                # following will cause an error in crontab implementation
-                #do_click = input('yes, to reboot, NO otherwise: ')
-                #if do_click.lower() == 'yes':
-                #   wait_and_click(wait, driver, 'xpath', element)
-                #   print('Wait for OpenDTU restart...')
-  </code>
+  - this probably occurred while executing the bash script, run_resetOpenDTU.sh.  it is not possible to interact with the python script through the bash script in this way.  you will not be able to complete the reboot confirmation step as configured during testing.
+  - set DEBUG_BASH = True in main.py:
+  <code>DEBUG_BASH = False #NOTE: DEBUG_BASH = True disables the text prompt to complete the reboot step during testing with run_resetOpenDTU.sh or crontab</code>
 
 Another hint:
 -------------------
 - if multiple versions of python are installed on the system, pay attention to which version is running in the virtual environment
-
-
