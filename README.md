@@ -50,11 +50,9 @@ crontab - task scheduling tool to run the script at set times, command line exam
 - use the setkey.py helper file to set the OpenDTU key in the system keyring
 
 $HOME/.profile - store the OpenDTU password if the system doesn't support a keyring
--------------------
-<code>
-export OPENDTU_USER=admin
-export OPENDTU_PASS=secretpassword
-</code>
+------------------- 
+<code>export OPENDTU_USER=admin
+export OPENDTU_PASS=secretpassword</code>
 - these lines can be at the end of the .profile file in your home directory
 - environment variables are not available to crontab by default
 - use ". $HOME/.profile; " in the crontab command line (as shown above) to import the environment variables at execution time
@@ -109,43 +107,67 @@ export OPENDTU_PASS=secretpassword
 --- OR use keyring ---
 
 Keyring:
-this is an optional way to store your OpenDTU password for automation.  using the setkey.py helper script is not required, the keyring implementation just needs to be consistent with the keyring retrieval used in main.py.  it might be slightly more secure to use a python commandline instead of saving a password temporarily in a file.
+- this is an optional way to store your OpenDTU password for automation.  using the setkey.py helper script is not required, the keyring implementation just needs to be consistent with - the keyring retrieval used in main.py.  it might be slightly more secure to use a python commandline instead of saving a password temporarily in a file.
 
-<code>
-nano setkey.py
-</code>
+<code>nano setkey.py</code>
 
-set your admin/user password for OpenDTU by replacing the placeholder word change in the following line of the setkey.py file
-<code>
-PASSWORD = 'change' #TODO: update this to the actual password when needed
-</code>
-after updating the password you can save it under a new name so that you can delete or shred it later without affecting setkey.py, in nano: ctrl+x. it will prompt you to save changes, press y.  it will ask for a name for the file, change it to something that will not attrack attention: temp.py
+- set your admin/user password for OpenDTU by replacing the placeholder word change in the following line of the setkey.py file
+<code>PASSWORD = 'change' #TODO: update this to the actual password when needed</code>
+- after updating the password you can save it under a new name so that you can delete or shred it later without affecting setkey.py, in nano: ctrl+x. it will prompt you to save changes, press y.  it will ask for a name for the file, change it to something that will not attrack attention: temp.py
 
-execute the helper script with python
-<code>
-python temp.py
-</code>
-delete or shred temp.py to remove the password stored in a the file. now that the password is stored in your system keyring, temp.py is no longer needed and setkey.py will be available if you need to repeat the process
+- execute the helper script with python
+<code>python temp.py</code>
+- delete or shred temp.py to remove the password stored in temp.py. now that the password is stored in your system keyring, temp.py is no longer needed and setkey.py will be available if you need to repeat the process
+<code>rm temp.py</code>
 
-if you didn't change the file name, re-open setkey.py to remove the password so that it will no longer be stored in plain text
-<code>
-nano setkey.py
-</code>
-after removing the password save and exit the file
+- if you didn't change the file name, re-open setkey.py to remove the password so that it will no longer be stored in plain text
+<code>nano setkey.py</code>
+- after removing the password save and exit the file
 
 Testing:
 -------------------
 - set DEBUG = True in main.py
-- TODO: add code steps
+<code>nano main.py</code>
+<code>DEBUG = True #NOTE: DEBUG = True disables reboot confirmation step for testing</code>
+- note, DEBUG = True will not complete the reset process, OpenDTU will not restart so that it does not interupt the normal operation during the day
 - if desired, set WATCH_BROWSER = True
-- TODO: add code steps
-- run tests to confirm that main.py executes correctly
-- you can test the main.py script directly, or through the bash script
+<code>WATCH_BROWSER = True</code>
+- to run a full test confirming reboot in debug mode, uncomment the following lines, 102-105
+- this will provide a user prompt, type yes to actually reboot OpenDTU
+<code>
+                do_click = input('yes, to reboot, NO otherwise: ')
+                if do_click.lower() == 'yes':
+                   wait_and_click(wait, driver, 'xpath', element)
+                   print('Wait for OpenDTU restart...')
+</code>
+
+Run tests to confirm that main.py executes correctly:
+- you can test the main.py script directly, then through the bash script, a crawl, walk, run approach
 - to run main.py directly, activate the virtual environment
 <code>
 source ~/resetOpenDTU/.venv/bin/activate
 python main.py
 </code>
+- if the script terminates with errors, check the Troubleshooting section below for solutions
+- the script with send debug information directly to the terminal
+<code>
+found main...
+loading Chrome options...
+initializing webdriver...
+initialized  webdriver...
+
+opening browser 2025-02-25 10:26:40.980931
+got url: http://192.168.189.3/maintenance/reboot...
+Login click successful...
+OpenDTU http://192.168.189.3/maintenance/reboot
+Click Reboot! confirmation is not automated in DEBUG mode.
+yes, to reboot, NO otherwise: NO
+Reboot click successful...
+browser closed 2025-02-25 10:26:57.505477.
+</code>
+- that didn't actually reboot the system, it just executed the script successfully
+- when the script actually reboots OpenDTU, you should get the phrase: Wait for OpenDTU restart...
+- 
 
 
 Work out any kinks to get the script to run reliably with OpenDTU, then finalize the setup:
@@ -185,3 +207,6 @@ Selenium browser and webdriver options - several available
 - for complete details reference: https://www.selenium.dev/documentation/webdriver/
 
 
+Troubleshooting:
+===================
+- TODO: add troubleshooting errors and fixes
