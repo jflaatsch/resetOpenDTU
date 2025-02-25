@@ -9,19 +9,20 @@ Required:
 -------------------
 - python3      - commonly used coding language (reference: https://www.python.org/)
 - virtualenv   - used to make a custom python environment for this project (reference: https://docs.python.org/3/library/venv.html)
-- selenium     - website manipulation library for python (reference: https://www.selenium.dev/)
-- crontab      - task scheduling tool to auto initiate the script (reference: https://en.wikipedia.org/wiki/Cron)
+- selenium     - an umbrella project for a range of tools and libraries that enable and support the automation of web browsers (reference: https://www.selenium.dev/documentation)
+- crontab      - The cron command-line utility is a job scheduler on Unix-like operating systems (reference: https://en.wikipedia.org/wiki/Cron)
 - chromium     - minimal web browser (alternatives: firefox, chrome, safari, edge, ie) (reference: https://www.chromium.org/Home/)
 - chromedriver - web driver for selenium (alternative: geckodriver, or corresponding driver for other browsers) 
 
 Optional:
 -------------------
 - keyring          - system keyring interface library for python (reference: https://pypi.org/project/keyring/)
-- xephyr           - virtual display interface
-- xvfb             - virtual frame buffer for xwindows
+- xserver          - GUI, X Window System display server (reference: https://www.x.org/archive/X11R7.5/doc/man/man1/Xserver.1.html)
+- xephyr           - X server outputting to a window on a pre-existing X display (reference: https://www.x.org/archive/X11R7.5/doc/man/man1/Xephyr.1.html)
+- xvfb             - virtual framebuffer X server for X Version 11 (reference: https://www.x.org/archive/X11R7.7/doc/man/man1/Xvfb.1.xhtml)
 - pyvirtualdisplay - display driver library for python (reference: https://pypi.org/project/PyVirtualDisplay/)
 
-Files in this repository (see Setup section below for quickstart steps):
+Files in this repository (see Setup section below for detailed steps):
 ===================
 main.py - main code to automate resetting OpenDTU
 -------------------
@@ -63,10 +64,11 @@ export OPENDTU_PASS=secretpassword</code>
 
 Setup:
 ===================
-install the dependencies on your system, for debian:
+Install the dependencies on your system, for debian:
+-------------------
 <code>
 apt update
-apt install python3 python3-venv pip crontab chromium cromedriver 
+apt install python3 pip crontab chromium cromedriver 
 </code>
 - see discussion for browser and driver alternatives
 <code>
@@ -80,6 +82,8 @@ deactivate
 </code>
 (reference: https://docs.python.org/3/library/venv.html)
 
+Configure crontab:
+-------------------
 - add the appropriate crontab command line for your implimentation and edit as desired
 - for initial testing, you can send the output to the terminal
 <code>tty</code>
@@ -88,10 +92,16 @@ deactivate
 - for first use of crontab select the default editor, recommend nano
 
 - for testing you can use the following crontab command line, replacing /dev/pts/xx with the actual output of the tty command
-<code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
+- environment variable option for password storage:
+  <code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
+- keyring option for password storage:
+  <code>13 03 * * * PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
 - replace $HOME with the actual path to your .profile for environment variables. 
 - replace PATH with the actual path to your resetOpenDTU folder location
 - keep the dot before $HOME, that is a command, keep the 2>&1 at the end, that directs output from the code to the terminal or log file.
+- for testint purposes, return here set a time in the near future from your system clock,
+- To define the time you can provide concrete values for minute (m), hour (h), day of month (dom), month (mon), and day of week (dow) or use '*' in these fields (for 'any').
+- use comma separated values for multiple times, or */5 to repeat every 5 minutes for example, should be a factor of 60
 - save and exit the file, if using nano: ctrl+s (save); ctrl+x (exit)
 
 Password storage:
@@ -114,8 +124,7 @@ Keyring:
 - this is an optional way to store your OpenDTU password for automation.  using the setkey.py helper script is not required, the keyring implementation just needs to be consistent with - the keyring retrieval used in main.py.  it might be slightly more secure to use a python commandline instead of saving a password temporarily in a file.
 
 <code>nano setkey.py</code>
-
-- set your admin/user password for OpenDTU by replacing the placeholder word change in the following line of the setkey.py file
+- set your admin/user password for OpenDTU by replacing the placeholder word "change" in the following line of the setkey.py file
 <code>PASSWORD = 'change' #TODO: update this to the actual password when needed</code>
 - after updating the password you can save it under a new name so that you can delete or shred it later without affecting setkey.py, in nano: ctrl+x. it will prompt you to save changes, press y.  it will ask for a name for the file, change it to something that will not attrack attention: temp.py
 
@@ -128,32 +137,65 @@ Keyring:
 <code>nano setkey.py</code>
 - after removing the password save and exit the file
 
-Testing:
+
+Testing in one big gulp:
+===================
+- if everything installed correctly above, you can set the IP for OpenDTU in main.py and see if it works
+  <code>nano main.py</code>
+- set the IP address for OpenDTU in the CONSTANTS section near the top of the file
+  <code>URL = f'http://192.168.xxx.xxx/maintenance/reboot' #NOTE: set your OpenDTU IP address here</code>
+- replace 192.168.xxx.xxx with your actual OpenDTU IP address
+- resetOpenDTU python script has DEBUG = False, by default, it will attempt to reset OpenDTU
+- if you want to change that for the initial run and not actual reboot OpenDTU, change to DEBUG = True
+- save and exit main.py
+
+- execute the bash script run_resetOpenDTU.sh to test if it works
+  <code>
+  cd ~/resetOpenDTU
+  ./run_resetOpenDTU.sh
+  </code>
+- after 30 seconds, you should get the following output:
+  <code>
+  start: 2025-02-25; 20:07:45, GMT
+  Wait for OpenDTU restart...
+  OpenDTU reset successfully...
+  end : 2025-02-25; 20:08:04, GMT
+  </code>
+- if you get some errors, take a step back, break it down into smaller bites, or check the Troubleshooting section for quick fixes
+
+Testing with little bites:
+===================
+- configuring display settings will be in a separate section for Display web browser
+
+Configure and test main.py
 -------------------
-- set DEBUG = True in main.py
+- set OpenDTU IP and DEBUG options in main.py
 <code>nano main.py</code>
-<code>DEBUG = True #NOTE: DEBUG = True disables reboot confirmation step for testing</code>
-- note, DEBUG = True will not complete the reset process, OpenDTU will not restart so that it does not interupt the normal operation during the day
-- if desired, set WATCH_BROWSER = True
-<code>WATCH_BROWSER = True</code>
-- to run a full test confirming reboot in debug mode, uncomment the following lines, 102-105
-- this will provide a user prompt, type yes to actually reboot OpenDTU
 <code>
-                do_click = input('yes, to reboot, NO otherwise: ')
-                if do_click.lower() == 'yes':
-                   wait_and_click(wait, driver, 'xpath', element)
-                   print('Wait for OpenDTU restart...')
+#CONFIGURATION CONSTANTS
+#-------------------------------
+DT_FORMAT = '%Y-%m-%dT%H:%M:%SZ' #NOTE: set a custom date time format as desired
+URL = f'http://192.168.xxx.xxx/maintenance/reboot' #NOTE: set your OpenDTU IP address here
+
+#debugging options
+DEBUG = False #NOTE: DEBUG = True disables reboot confirmation step for testing
+DEBUG_BASH = False #NOTE: DEBUG_BASH = True disables the text prompt to complete the reboot step during testing with run_resetOpenDTU.sh or crontab
+WATCH_BROWSER = False #NOTE: WATCH_BROWSER = True enables a virtual display for testing
 </code>
+- note, DEBUG = True will not complete the reset process, OpenDTU will not restart so that it does not interupt OpenDTU's normal operation during the day
+- if desired, set WATCH_BROWSER = True, this should allow you to see the OpenDTU website while the python script main.py executes
+- to run a full test confirming reboot in debug mode, set DTBUG_BASH
+- this will provide a user prompt, type yes to actually reboot OpenDTU
 
 Run tests to confirm that main.py executes correctly:
 - you can test the main.py script directly, then through the bash script, a crawl, walk, run approach
 - to run main.py directly, activate the virtual environment
 <code>
-source ~/resetOpenDTU/.venv/bin/activate
+cd resetOpenDTU
+source ./.venv/bin/activate
 python main.py
 </code>
-- if the script terminates with errors, check the Troubleshooting section below for solutions
-- the script with send debug information directly to the terminal
+- the script will send debug information directly to the terminal
 <code>
 found main...
 loading Chrome options...
@@ -171,27 +213,175 @@ browser closed 2025-02-25 10:26:57.505477.
 </code>
 - that didn't actually reboot the system, it just executed the script successfully
 - when the script actually reboots OpenDTU, you should get the phrase: Wait for OpenDTU restart...
-- 
+- if the script terminates with errors, check the Troubleshooting section below for solutions
 
+Configure and test run_resetOpenDTU.sh
+-------------------
+- if successful, continue to the next course, execute the bash script: run_resetOpenDTU.sh
+- first set DEBUG_BASH = True in main.py to prevent errors while testing the bash script
+  <code>nano main.py</code>
+  <code>DEBUG_BASH = True #NOTE: DEBUG_BASH = True disables the text prompt to complete the reboot step during testing with run_resetOpenDTU.sh or crontab</code>
+- save the file and exit the editor
+  
+- match the display settings you used in main.py and modify the location of your resetOpenDTU virtual environment as required
+  <code>nano run_resetOpenDTU.sh</code>
+  <code>
+  #export DISPLAY=":0"
+  
+  PYTHON_FOLDER="~/resetOpenDTU"
+  </code>
+- modify the PYTHON_FOLDER line to match your resetOpenDTU location
+- if you enabled the display settings in main.py to watch selenium during execution, uncomment the DISPLAY line in run_resetOpenDTU.sh shown above
+  <code>export DISPLAY=":0"</code>
+- save the file and exit the editor
+  <code>./run_resetOpenDTU.sh</code>
+- that should execute without error and return the following output
+  <code>
+  start: 2025-02-25; 21:27:51, GMT
+  found main...
+  loading Chrome options...
+  initializing webdriver...
+  initialized  webdriver...
+  
+  opening browser 2025-02-25 21:28:03.896087
+  got url: http://192.168.0.2/login?returnUrl=/maintenance/reboot...
+  Login click successful...
+  OpenDTU http://192.168.189.3/maintenance/reboot
+  Click Reboot! confirmation is not automated in DEBUG mode.
+  Reboot click successful...
+  browser closed 2025-02-25 21:28:17.067396.
+  OpenDTU reset successfully...
+  end : 2025-02-25; 21:28:17, GMT
+  </code>
 
-Work out any kinks to get the script to run reliably with OpenDTU, then finalize the setup:
+Configure and test crontab:
+-------------------
+- if you already followed the crontab setup step in Setup, you will just need to set the time in the near future to see the results
+  <code>crontab -e</code>
+  <code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
+- the resetOpenDTU command line probably starts with a coupe numbers followed by stars
+- change the first number to the current minutes plus one or two, or optionally set it to repeat every few minutes, */3
+- set the second number to the current hour, that should suffice
+- refer to Setup to review additional crontab settings as desired
+- save the file and close the editor
+- in a minute you should get the same output as you did during the bash script test with run_resetOpenDTU.sh 
+
+Finalize the setup:
 -------------------
 - configure crontab to output to a log file
 <code>crontab -e</code>
-- modify the command line to use the /var/log/resetOpenDTU.log
+- modify the command line to use the /var/log/resetOpenDTU.log and set the minute hour appropriately
+- this example will reset OpenDTU at 03:13 on three days each week
 <code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /var/log/resetOpenDTU.log 2>&1</code>
-- save and exit the file
+- save the file and exit the editor
 
-- modify main.py to turn off debugging mode so that it will complete the reboot confirmation step
+- modify main.py to disable DEBUG options so that resetOpenDTU will complete the reboot confirmation step
 <code>nano main.py</code>
-- change the constant DEBUG = False, so that it will not output troubleshooting steps and compelte the reboot confirmation step
-<code>DEBUG = False #NOTE: DEBUG = True disables reboot confirmation step for testing</code>
-- change the constant WATCH_BROWSER = False, to minimize system resources, or prepare for headless operation
-<code>WATCH_BROWSER = False</code>
+<code>
+#CONFIGURATION CONSTANTS
+#-------------------------------
+DT_FORMAT = '%Y-%m-%dT%H:%M:%SZ' #NOTE: set a custom date time format as desired
+URL = f'http://192.168.xxx.xxx/maintenance/reboot' #NOTE: set your OpenDTU IP address here
+
+#debugging options
+DEBUG = False #NOTE: DEBUG = True disables reboot confirmation step for testing
+DEBUG_BASH = False #NOTE: DEBUG_BASH = True disables the text prompt to complete the reboot step during testing with run_resetOpenDTU.sh or crontab
+WATCH_BROWSER = False #NOTE: WATCH_BROWSER = True enables a virtual display for testing
+</code>
+
+- confirm that run_resetOpenDTU.sh is configured to match the display option set in main.py
+  <code>nano run_resetOpenDTU.sh</code>
+  <code>
+  #export DISPLAY=":0"
+  
+  PYTHON_FOLDER="~/resetOpenDTU"
+  </code>
+
+Congratulations! Working through this tutorial required dedication, but you should now have a way to reset OpenDTU on your schedule.
+
+If you found this project useful, please add a star to help other people find it on Github. If you work with OpenDTU, please consider linking to this project from the OpenDTU Github project
+
+Optional configuration:
+===================
+Use Firefox:
+-------------------
+- verify that you have the required binaries to run selenium with the geckodriver
+  <code>
+  whereis firefox
+  whereis firefox-esr
+  whereis geckodriver
+  </code>
+- note the location of the files you will need, either browser and geckodriver
+- verify that the paths to the binary files are correct in main.py
+  <code>nano main.py</code>
+  <code>
+  CHROMEDRIVER_PATH   = r'/usr/bin/chromedriver'
+  FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'
+  GECKODRIVER_PATH    = r'/usr/bin/geckodriver'
+  </code>
+
+- switch the script to use firefox and geckodriver by setting USE_BROWSER in main.py as shown below
+  <code>
+  USE_BROWSER  = USE_FIREFOX #NOTE: alternatively set USE_CHROMIUM to use chromium/chrome
+                             #NOTE: other browsers can be used, but require additional coding
+  </code>
+
+Use another browser:
+-------------------
+- using another browser would follow a process similar to using Firefox, but will require additional code for implimentation
+- below is the relevant code, just add the corresponding options for your desired browser
+- import the appropriate service as browser-service
+  <code>
+  from selenium.webdriver.chrome.service  import Service as chrome-service
+  from selenium.webdriver.firefox.service import Service as firefox-service
+  </code>
+- add an option and set the path to the driver & browser as required
+  <code>
+  #selenium browser and webdriver options
+  USE_FIREFOX  = 'firefox'
+  USE_CHROMIUM = 'chromium'
+  USE_BROWSER  = USE_CHROMIUM #NOTE: alternatively set USE_FIREFOX to use firefox
+                              #NOTE: other browsers can be used, but require additional code for implimentation
+  CHROMEDRIVER_PATH   = r'/usr/bin/chromedriver'
+  FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'
+  GECKODRIVER_PATH    = r'/usr/bin/geckodriver'
+  </code>
+- add the desired browser opotions, service, and driver in the following section
+  <code>
+     # initiate the webdriver:
+    #NOTE: set the USE_BROWSER constant to enable this option
+    if USE_BROWSER == USE_FIREFOX:
+        if DEBUG: print('loading Firefox options...')
+        options = webdriver.FirefoxOptions()
+        options.binary_location = CHROMEDRIVER_PATH
+        options.add_argument('--headless')
+        service = firefox-service(GECKODRIVER_PATH)
+        driver = webdriver.Firefox(options=options, service=service) #requires >
+    elif USE_BROWSER == USE_CHROMIUM:
+        if DEBUG: print('loading Chrome options...')
+        service = chrome-service(executable_path=CHROMEDRIVER_PATH)
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        if DEBUG: print('initializing webdriver...')
+        driver = webdriver.Chrome(service=service, options=options)
+        if DEBUG: print('initialized  webdriver...')
+    else:
+        print('no webdriver configured...')
+        return False
+  </code>
+
+Use keyring:
+-------------------
+- configuring resetOpenDTU to use the keyring library to store the OpenDTU password is described in Setup above
+
+Show the browser window in an xwindow display:
+-------------------
+- if the system does not already have an xwindow GUI display, implementing the the browser in a display will require significant additional resources
+- TODO: walk through settings for enabling the xwindow display for testing
 
 Discussion:
 ===================
-this initial script requires some understanding of python, selenium, and crontab to impliment fully.  there are several options and the script can be modified to meet your requirements.
+this script requires some understanding of python, selenium, and crontab to impliment fully.  there are several options and the script can be modified to meet your requirements by changing a few constants in main.py.
 
 Password storage options - keyring or environment variables, other methods are also possible but will require more modification to main.py
 -------------------
