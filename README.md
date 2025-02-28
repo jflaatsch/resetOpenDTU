@@ -45,7 +45,7 @@ crontab - task scheduling tool to run the script at set times, command line exam
 - replace $HOME with the path to your home folder
 - replace $PATH with the path to your installation of resetOpenDTU
 - this line is intended to use environment variables set in your ~/.profile
-- on Raspberry Pi, it is simpler to store secrets in the user environment variables than in the system keyring 
+- on Raspberry Pi, it is simpler to store secrets in the user environment variables than in the system keyring
 
 <code>13 03 * * * PATH/resetOpenDTU/run_resetOpenDTU.sh >> /var/log/resetOpenDTU.log 2>&1</code>
 - runs OpenDTU reset script every day at 03:13 system time
@@ -95,7 +95,7 @@ Configure crontab:
 - environment variable option for password storage:
   <code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
 - keyring option for password storage:
-  <code>13 03 * * * PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
+<code>13 03 * * * PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
 - replace $HOME with the actual path to your .profile for environment variables. 
 - replace PATH with the actual path to your resetOpenDTU folder location
 - keep the dot before $HOME, that is a command, keep the 2>&1 at the end, that directs output from the code to the terminal or log file.
@@ -346,28 +346,28 @@ Use another browser:
   GECKODRIVER_PATH    = r'/usr/bin/geckodriver'
   </code>
 - add the desired browser opotions, service, and driver in the following section
-  <code>
-     # initiate the webdriver:
-    #NOTE: set the USE_BROWSER constant to enable this option
-    if USE_BROWSER == USE_FIREFOX:
-        if DEBUG: print('loading Firefox options...')
-        options = webdriver.FirefoxOptions()
-        options.binary_location = FIREFOX_BINARY_PATH
-        options.add_argument('--headless')
-        service = firefox-service(GECKODRIVER_PATH)
-        driver = webdriver.Firefox(options=options, service=service) #requires >
-    elif USE_BROWSER == USE_CHROMIUM:
-        if DEBUG: print('loading Chrome options...')
-        service = chrome-service(executable_path=CHROMEDRIVER_PATH)
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        if DEBUG: print('initializing webdriver...')
-        driver = webdriver.Chrome(service=service, options=options)
-        if DEBUG: print('initialized  webdriver...')
-    else:
-        print('no webdriver configured...')
-        return False
-  </code>
+<code>
+# initiate the webdriver:
+#NOTE: set the USE_BROWSER constant to enable this option
+if USE_BROWSER == USE_FIREFOX:
+    if DEBUG: print('loading Firefox options...')
+    options = webdriver.FirefoxOptions()
+    options.binary_location = FIREFOX_BINARY_PATH
+    options.add_argument('--headless')
+    service = firefox-service(GECKODRIVER_PATH)
+    driver = webdriver.Firefox(options=options, service=service) #requires >
+elif USE_BROWSER == USE_CHROMIUM:
+    if DEBUG: print('loading Chrome options...')
+    service = chrome-service(executable_path=CHROMEDRIVER_PATH)
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')
+    if DEBUG: print('initializing webdriver...')
+    driver = webdriver.Chrome(service=service, options=options)
+    if DEBUG: print('initialized  webdriver...')
+else:
+    print('no webdriver configured...')
+    return False
+</code>
 
 Use keyring:
 -------------------
@@ -405,10 +405,10 @@ Troubleshooting:
 Installation issues:
 -------------------
 - -bash: virtualenv: command not found
-  - there are multiple ways to setup the virtual environment, you can use a method that is already installed or install virtualenv
-  <code>
+  - there are multiple ways to setup the virtual environment, you can use a method that is already installed or install virtualenv<code>
 ~/resetOpenDTU$ source ./.venv/bin/activate
-(.venv) ~/resetOpenDTU$ pip install virtualenv</code>
+(.venv) ~/resetOpenDTU$ pip install virtualenv
+</code>
 
 - The virtual environment was not created successfully because ensurepip is not available.  On Debian/Ubuntu systems, you need to install the python3-venv package using the following command.
   - there are multiple ways to setup the virtual environment, you must have tried the python -m venv method, but python3-venv is not installed
@@ -438,19 +438,18 @@ Selenium configuration issues:
 - selenium.common.exceptions.WebDriverException: Message: Unsupported platform/architecture combination: linux/aarch64
   - this error occurs when selenium doesn't receive a path to a binary file for the browser or webdriver
   - specify the location of the binary executables of the browser and webdriver
-  - locate the required binary files for your desired configuration:
-    <code>
-  ~$ whereis chromium;
-  ~$ whereis chromedriver;
-  ~$ whereis firefox;
-  ~$ whereis geckodriver
-    </code>
+  - locate the required binary files for your desired configuration:<code>
+~$ whereis chromium;
+~$ whereis chromedriver;
+~$ whereis firefox;
+~$ whereis geckodriver
+</code>
   - add the path to the corresponding lines in main.py
-  <code>
-  CHROMEDRIVER_PATH   = r'/usr/bin/chromedriver' #NOTE: update to the actual location reported by whereis
-  FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'  #NOTE: update to the actual location reported by whereis
-  GECKODRIVER_PATH    = r'/usr/bin/geckodriver'  #NOTE: update to the actual location reported by whereis
-  </code>
+<code>
+CHROMEDRIVER_PATH   = r'/usr/bin/chromedriver' #NOTE: update to the actual location reported by whereis
+FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'  #NOTE: update to the actual location reported by whereis
+GECKODRIVER_PATH    = r'/usr/bin/geckodriver'  #NOTE: update to the actual location reported by whereis
+</code>
   - modify the path constants to match the paths returned by whereis
 
 - selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
@@ -458,9 +457,7 @@ Selenium configuration issues:
   - firefox/firefox-esr use the geckodriver
   - chrome/chromium use the chromedriver
   - install the required browser and driver:
-    <code>
-  ~$ sudo apt install firefox
-    </code>
+<code>~$ sudo apt install firefox</code>
     - firefox should include geckodriver, reference: https://www.baeldung.com/linux/geckodriver-installation
     - apt install chromium-browser chromium-chromedriver
   - 
@@ -474,9 +471,7 @@ Selenium configuration issues:
 - selenium.common.exceptions.InvalidArgumentException: Message: binary is not a Firefox executable
 - Message: binary is not a Firefox executable - firefox is either not installed, or the path to the executable is incorrect
   - install firefox:
-  <code>
-~$ sudo apt install firefox
-  </code>
+  <code>~$ sudo apt install firefox</code>
   - update path to executable: whereis firefox
   - you might have firefox-esr install, you can also use that
   - optionally install firefox-esr ~400MB required for installation with dependencies: apt install firefox-esr
@@ -485,9 +480,7 @@ Selenium configuration issues:
 
 - selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
   - install chrome:
-  <code>
-~$ sudo apt install chrome-browser
-  </code>
+  <code>~$ sudo apt install chrome-browser</code>
   - note that chrome is resource intensive, if it is not already installed, you may want to use chromium instead
   - update path to executable: whereis google-chrome; whereis chromebrowser
   - see selenium.common.exceptions.WebDriverException above
