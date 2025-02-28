@@ -142,6 +142,9 @@ Testing in one big gulp:
 - if everything installed correctly above, you can set the IP for OpenDTU in main.py and see if it works
   <code>~$ nano main.py</code>
 - set the IP address for OpenDTU in the CONSTANTS section near the top of the file
+- recognize that the OpenDTU website uses http by default, not https
+- if you configured OpenDTU to use https, then the password exchange with the website should be secure
+- with that in mind, recommend only using the OpenDTU default setup over your private local network
   <code>URL = f'http://192.168.xxx.xxx/maintenance/reboot' #NOTE: set your OpenDTU IP address here</code>
 - replace 192.168.xxx.xxx with your actual OpenDTU IP address
 - resetOpenDTU python script has DEBUG = False, by default, it will attempt to reset OpenDTU
