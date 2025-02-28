@@ -16,8 +16,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service  import Service as chrome-service
-from selenium.webdriver.firefox.service import Service as firefox-service
+from selenium.webdriver.chrome.service  import Service as chrome_Service
+from selenium.webdriver.firefox.service import Service as firefox_Service
 #from selenium.webdriver.common.action_chains import ActionChains
 #from pyvirtualdisplay import Display #NOTE: uncomment this line to use a virtual display after installing (pip install pyvirtualdisplay)
                                       #NOTE: to watch selenium execute in a window, also set WATCH_BROWSER = True
@@ -198,11 +198,11 @@ def click_reset(url):
         options = webdriver.FirefoxOptions()
         options.binary_location = CHROMEDRIVER_PATH
         options.add_argument('--headless')
-        service = firefox-service(GECKODRIVER_PATH)
+        service = firefox_Service(GECKODRIVER_PATH)
         driver = webdriver.Firefox(options=options, service=service) #requires geckodriver installed
     elif USE_BROWSER == USE_CHROMIUM:
         if DEBUG: print('loading Chrome options...')
-        service = chrome-service(executable_path=CHROMEDRIVER_PATH)
+        service = chrome_Service(executable_path=CHROMEDRIVER_PATH)
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         if DEBUG: print('initializing webdriver...')
