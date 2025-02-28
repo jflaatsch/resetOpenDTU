@@ -75,9 +75,10 @@ Install the dependencies on your system, for debian:
 ~$ pip install virtualenv 
 ~$ virtualenv ~/resetOpenDTU/.venv
 ~$ cd ~/resetOpenDTU
-~$ source ./.venv/bin/activate 
-~$ pip install selenium keyring pyvirtualdisplay
-~$ deactivate
+(.venv) ~/resetOpenDTU$ source ./.venv/bin/activate
+(.venv) ~/resetOpenDTU$ pip install selenium keyring pyvirtualdisplay
+(.venv) ~/resetOpenDTU$ deactivate
+~/resetOpenDTU$
 </code>
 (reference: https://docs.python.org/3/library/venv.html)
 
@@ -85,9 +86,9 @@ Configure crontab:
 -------------------
 - add the appropriate crontab command line for your implementation and edit as desired
 - for initial testing, you can send the output to the terminal
-<code>~$ tty</code>
+<code>~/resetOpenDTU$ tty</code>
 - note the output from the tty command, this is the device assigned to your terminal
-<code>~$ crontab -e</code>
+<code>~/resetOpenDTU$ crontab -e</code>
 - for first use of crontab select the default editor, recommend nano
 
 - for testing you can use the following crontab command line, replacing /dev/pts/xx with the actual output of the tty command
@@ -108,7 +109,7 @@ Password storage:
 Environment variables:
 - this is a relatively simple and reasonably secure way to store the password for OpenDTU on your local system.  the .profile file in your home folder is loaded by the system when you - login, setting environment variables in that file will be loaded when the user logs into the system, but are not available to other users.
 - the .profile file is protected such that only root and the user will be able to read the file.
-<code>~$ nano ~/.profile</code>
+<code>~/resetOpenDTU$ nano ~/.profile</code>
 - add the following lines to the end of .profile 
 <code>
 export OPENDTU_USER=admin
@@ -122,25 +123,25 @@ export OPENDTU_PASS=secretpassword
 Keyring:
 - this is an optional way to store your OpenDTU password for automation.  using the setkey.py helper script is not required, the keyring implementation just needs to be consistent with - the keyring retrieval used in main.py.  it might be slightly more secure to use a python command line instead of saving a password temporarily in a file.
 
-<code>~$ nano setkey.py</code>
+<code~/resetOpenDTU$ nano setkey.py</code>
 - set your admin/user password for OpenDTU by replacing the placeholder word "change" in the following line of the setkey.py file
 <code>PASSWORD = 'change' #NOTE: update this to the actual password when needed</code>
 - after updating the password you can save it under a new name so that you can delete or shred it later without affecting setkey.py, in nano: ctrl+x. it will prompt you to save changes, press y.  it will ask for a name for the file, change it to something that will not attract attention: temp.py
 
 - execute the helper script with python
-<code>~$ python temp.py</code>
+<code>~/resetOpenDTU$ python temp.py</code>
 - delete or shred temp.py to remove the password stored in temp.py. now that the password is stored in your system keyring, temp.py is no longer needed and setkey.py will be available if you need to repeat the process
-<code>~$ rm temp.py</code>
+<code>~/resetOpenDTU$ rm temp.py</code>
 
 - if you didn't change the file name, re-open setkey.py to remove the password so that it will no longer be stored in plain text
-<code>~$ nano setkey.py</code>
+<code>~/resetOpenDTU$ nano setkey.py</code>
 - after removing the password save and exit the file
 
 
 Testing in one big gulp:
 ===================
 - if everything installed correctly above, you can set the IP for OpenDTU in main.py and see if it works
-  <code>~$ nano main.py</code>
+  <code>~/resetOpenDTU$ nano main.py</code>
 - set the IP address for OpenDTU in the CONSTANTS section near the top of the file
 - recognize that the OpenDTU website uses http by default, not https
 - if you configured OpenDTU to use https, then the password exchange with the website should be secure
@@ -153,8 +154,7 @@ Testing in one big gulp:
 
 - execute the bash script run_resetOpenDTU.sh to test if it works
   <code>
-~$  cd ~/resetOpenDTU
-~$ ./run_resetOpenDTU.sh
+~/resetOpenDTU$ ./run_resetOpenDTU.sh
   </code>
 - after 30 seconds, you should get the following output:
   <code>
@@ -172,7 +172,7 @@ Testing with little bites:
 Configure and test main.py
 -------------------
 - set OpenDTU IP and DEBUG options in main.py
-<code>~$ nano main.py</code>
+<code>~/resetOpenDTU$ nano main.py</code>
 <code>
 #CONFIGURATION CONSTANTS
 #-------------------------------
@@ -193,9 +193,8 @@ Run tests to confirm that main.py executes correctly:
 - you can test the main.py script directly, then through the bash script, a crawl, walk, run approach
 - to run main.py directly, activate the virtual environment
 <code>
-~$ cd resetOpenDTU
-~$ source ./.venv/bin/activate
-~$ python main.py
+~/resetOpenDTU$ source ./.venv/bin/activate
+(.venv) ~/resetOpenDTU$ python main.py
 </code>
 - the script will send debug information directly to the terminal
 <code>
@@ -221,12 +220,12 @@ Configure and test run_resetOpenDTU.sh
 -------------------
 - if successful, continue to the next course, execute the bash script: run_resetOpenDTU.sh
 - first set DEBUG_BASH = True in main.py to prevent errors while testing the bash script
-  <code>~$ nano main.py</code>
+  <code>~/resetOpenDTU$ nano main.py</code>
   <code>DEBUG_BASH = True #NOTE: DEBUG_BASH = True disables the text prompt to complete the reboot step during testing with run_resetOpenDTU.sh or crontab</code>
 - save the file and exit the editor
   
 - match the display settings you used in main.py and modify the location of your resetOpenDTU virtual environment as required
-  <code>~$ nano run_resetOpenDTU.sh</code>
+  <code>~/resetOpenDTU$ nano run_resetOpenDTU.sh</code>
   <code>
   #export DISPLAY=":0"
   PYTHON_FOLDER="~/resetOpenDTU"
@@ -235,7 +234,7 @@ Configure and test run_resetOpenDTU.sh
 - if you enabled the display settings in main.py to watch selenium during execution, uncomment the DISPLAY line in run_resetOpenDTU.sh shown above
   <code>export DISPLAY=":0"</code>
 - save the file and exit the editor
-  <code>~$ ./run_resetOpenDTU.sh</code>
+  <code>~/resetOpenDTU$ ./run_resetOpenDTU.sh</code>
 - that should execute without error and return the following output
   <code>
   start: 2025-02-25; 21:27:51, GMT
@@ -258,7 +257,7 @@ Configure and test run_resetOpenDTU.sh
 Configure and test crontab:
 -------------------
 - if you already followed the crontab setup step in Setup, you will just need to set the time in the near future to see the results
-  <code>~$ crontab -e</code>
+  <code>~/resetOpenDTU$ crontab -e</code>
   <code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /dev/pts/xx 2>&1</code>
 - the resetOpenDTU command line probably starts with a coupe numbers followed by stars
 - change the first number to the current minutes plus one or two, or optionally set it to repeat every few minutes, */3
@@ -270,14 +269,14 @@ Configure and test crontab:
 Finalize the setup:
 -------------------
 - configure crontab to output to a log file
-<code>~$ crontab -e</code>
+<code>~/resetOpenDTU$ crontab -e</code>
 - modify the command line to use the /var/log/resetOpenDTU.log and set the minute hour appropriately
 - this example will reset OpenDTU at 03:13 on three days each week
 <code>13 03 * * 1,3,5 . $HOME/.profile; PATH/resetOpenDTU/run_resetOpenDTU.sh >> /var/log/resetOpenDTU.log 2>&1</code>
 - save the file and exit the editor
 
 - modify main.py to disable DEBUG options so that resetOpenDTU will complete the reboot confirmation step
-<code>~$ nano main.py</code>
+<code~/resetOpenDTU$ nano main.py</code>
 <code>
 #CONFIGURATION CONSTANTS
 #-------------------------------
@@ -291,7 +290,7 @@ WATCH_BROWSER = False #NOTE: WATCH_BROWSER = True enables a virtual display for 
 </code>
 
 - confirm that run_resetOpenDTU.sh is configured to match the display option set in main.py
-  <code>~$ nano run_resetOpenDTU.sh</code>
+  <code>~/resetOpenDTU$ nano run_resetOpenDTU.sh</code>
   <code>
   #export DISPLAY=":0"
   PYTHON_FOLDER="~/resetOpenDTU"
@@ -307,13 +306,13 @@ Use Firefox:
 -------------------
 - verify that you have the required binaries to run selenium with the geckodriver
   <code>
-~$ whereis firefox
-~$ whereis firefox-esr
-~$ whereis geckodriver
+~/resetOpenDTU$ whereis firefox
+~/resetOpenDTU$ whereis firefox-esr
+~/resetOpenDTU$ whereis geckodriver
   </code>
 - note the location of the files you will need, either browser and geckodriver
 - verify that the paths to the binary files are correct in main.py
-  <code>~$ nano main.py</code>
+  <code>~/resetOpenDTU$ nano main.py</code>
   <code>
   CHROMEDRIVER_PATH   = r'/usr/bin/chromedriver'
   FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'
@@ -407,7 +406,9 @@ Installation issues:
 -------------------
 - -bash: virtualenv: command not found
   - there are multiple ways to setup the virtual environment, you can use a method that is already installed or install virtualenv
-  <code>~$ pip install virtualenv</code>
+  <code>
+~/resetOpenDTU$ source ./.venv/bin/activate
+(.venv) ~/resetOpenDTU$ pip install virtualenv</code>
 
 - The virtual environment was not created successfully because ensurepip is not available.  On Debian/Ubuntu systems, you need to install the python3-venv package using the following command.
   - there are multiple ways to setup the virtual environment, you must have tried the python -m venv method, but python3-venv is not installed
@@ -420,7 +421,7 @@ Installation issues:
   - comment out reference to pyvirtualdisplay and to Display
 
 - FileNotFoundError: [Errno 2] No such file or directory: 'Xvfb'
-  - install xvfb: apt install xvfb
+  - install xvfb: <code>~$ sudo apt install xvfb</code>
 
 Display configuration issues:
 -------------------
@@ -438,15 +439,17 @@ Selenium configuration issues:
   - this error occurs when selenium doesn't receive a path to a binary file for the browser or webdriver
   - specify the location of the binary executables of the browser and webdriver
   - locate the required binary files for your desired configuration:
-    - whereis chromium;
-    - whereis chromedriver;
-    - whereis firefox;
-    - whereis geckodriver
+    <code>
+  ~$ whereis chromium;
+  ~$ whereis chromedriver;
+  ~$ whereis firefox;
+  ~$ whereis geckodriver
+    </code>
   - add the path to the corresponding lines in main.py
   <code>
-  CHROMEDRIVER_PATH = r'/usr/bin/chromedriver'
-  FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'
-  GECKODRIVER_PATH = r'/usr/bin/geckodriver'
+  CHROMEDRIVER_PATH   = r'/usr/bin/chromedriver' #NOTE: update to the actual location reported by whereis
+  FIREFOX_BINARY_PATH = r'/usr/bin/firefox-esr'  #NOTE: update to the actual location reported by whereis
+  GECKODRIVER_PATH    = r'/usr/bin/geckodriver'  #NOTE: update to the actual location reported by whereis
   </code>
   - modify the path constants to match the paths returned by whereis
 
@@ -455,7 +458,9 @@ Selenium configuration issues:
   - firefox/firefox-esr use the geckodriver
   - chrome/chromium use the chromedriver
   - install the required browser and driver:
-    - apt install firefox
+    <code>
+  ~$ sudo apt install firefox
+    </code>
     - firefox should include geckodriver, reference: https://www.baeldung.com/linux/geckodriver-installation
     - apt install chromium-browser chromium-chromedriver
   - 
@@ -468,7 +473,10 @@ Selenium configuration issues:
 
 - selenium.common.exceptions.InvalidArgumentException: Message: binary is not a Firefox executable
 - Message: binary is not a Firefox executable - firefox is either not installed, or the path to the executable is incorrect
-  - install firefox: apt install firefox
+  - install firefox:
+  <code>
+~$ sudo apt install firefox
+  </code>
   - update path to executable: whereis firefox
   - you might have firefox-esr install, you can also use that
   - optionally install firefox-esr ~400MB required for installation with dependencies: apt install firefox-esr
@@ -476,7 +484,10 @@ Selenium configuration issues:
   - see selenium.common.exceptions.WebDriverException above
 
 - selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
-  - install chrome: apt install chrome-browser
+  - install chrome:
+  <code>
+~$ sudo apt install chrome-browser
+  </code>
   - note that chrome is resource intensive, if it is not already installed, you may want to use chromium instead
   - update path to executable: whereis google-chrome; whereis chromebrowser
   - see selenium.common.exceptions.WebDriverException above
@@ -523,3 +534,7 @@ Execution errors:
 Another hint:
 -------------------
 - if multiple versions of python are installed on the system, pay attention to which version is running in the virtual environment
+  <code>
+(.venv) ~/resetOpenDTU$ python -V
+(.venv) ~/resetOpenDTU$ python3 -V
+  </code>
