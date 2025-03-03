@@ -30,7 +30,7 @@ this is the main script.  it is currently set to use chromium without a display 
 
 setkey.py - helper file to add the OpenDTU admin password key to your local keyring
 -------------------
-this file can be used to add the OpenDTU password to the system keyring. change the password, execute the script, then delete the password form this file.  
+this file can be used to add your OpenDTU password to the system keyring.  
 
 run_resetOpenDTU.sh - bash wrapper script to call from crontab
 -------------------
